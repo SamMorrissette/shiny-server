@@ -14,7 +14,7 @@ server <- function(input, output) {
     bins <- seq(min(x), max(x), length.out = input$bins + 1)
     
     hist(x, breaks = bins, col = "#75AADB", border = "white",
-         xlab = "Waiting time to next eruption (in mins)",
+         xlab = "Waiting time to next eruasdfasdfption (in mins)",
          main = "Histogram of waiting times")
     
   })
