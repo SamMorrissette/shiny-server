@@ -101,6 +101,10 @@ table.data <- corona_data %>%
   select(Region,Date.Reported,Gender,Age,Presumptive.Confirmed)
 names(table.data) <- c("Region","Date Reported","Gender","Age Category", "Presumptive/Confirmed")
 
+gender_data <- corona_data %>%
+  group_by(Gender) %>%
+  count()
+
 function(input, output, session) {
   output$map <- renderLeaflet({
     m <- leaflet(mb_map) %>% 
@@ -152,6 +156,21 @@ function(input, output, session) {
     t
     })
   
+  output$genderHist <- renderPlotly({
+      t <- plot_ly(gender_data,x=~Gender,y=~n,type='bar',
+                   color=I("lightblue"),
+                   hovertemplate = '<b>Gender:</b> %{x} <br> <b># of Cases:</b> %{y}<extra></extra>')
+      t <- t %>% 
+        config(displayModeBar = F) %>%
+        style(hoverlabel=label) %>%
+        layout(title="Gender Distribution",
+               xaxis=list(title="Gender"),
+               yaxis=list(title=""),
+               font=list(family="Arial",size=13))
+      t
+    })
+    
+    
   output$data.table <- renderDataTable({
     DT::datatable(table.data,
                   rownames = FALSE,
