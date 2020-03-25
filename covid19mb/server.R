@@ -61,24 +61,22 @@ mb_map$FULLNAME <- c("Northern Regional Health Authority",
                      "Winnipeg Regional Health Authority (Churchill)")
 
 popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
-                    "<b># of Presumptive Cases: </b>", mb_map$Presumptive, "<br>",
-                    "<b># of Confirmed Cases: </b>", mb_map$Confirmed, "<br>",
                     "<b># of Total Cases: </b>", mb_map$n)
 
 ageData <- corona_data %>% 
   group_by(Age) %>% 
   count() %>%
   as.data.frame()
-empty <- data.frame(Age=c("0-9","10-19","20-29","90+"),
-           n=c(0,0,0,0))
+empty <- data.frame(Age=c("10-19","90+"),
+           n=c(0,0))
 empty$Age <- as.factor(empty$Age)
 ageData <- rbind(ageData,empty)
 
-ageData$Age <- ordered(ageData$Age, levels = c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"))
+ageData$Age <- ordered(ageData$Age, levels = c("Unknown","0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"))
 
 
-dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/23"),by="day")
-newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0)
+dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/25"),by="day")
+newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14)
 cumcases <- cumsum(newcases)
 timeData <- data.frame(dates,newcases,cumcases)
 font <- list(
@@ -131,7 +129,7 @@ function(input, output, session) {
                                         "<b> Proportion of Cases: </b> ",prop))) + 
       geom_bar(aes(x=Age,y=n),stat="identity",fill="lightblue") +
       theme_minimal() + 
-      ylim(c(0,5)) +
+      ylim(c(0,max(ageData$n+2))) +
       ylab("# of Cases") + 
       ggtitle("Age Distribution") +
       theme(plot.title = element_text(hjust=0.5))
