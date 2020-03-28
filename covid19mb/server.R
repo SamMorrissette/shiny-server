@@ -29,8 +29,10 @@ mb_map@polygons[[3]]@Polygons[[2]] <- NULL
 
 corona_data <- read.csv("Data.csv")
 cases <- corona_data %>% 
+  filter(HR_UID!='Unknown') %>%
   group_by(HR_UID) %>% 
   count()
+
 
 mb_map$HR_UID <- c("NRHA","SHR","WRHA","PMH","IERHA","WRHA-CH")
 mb_map <- merge(mb_map,cases,all.x=TRUE)
@@ -75,8 +77,8 @@ ageData <- rbind(ageData,empty)
 ageData$Age <- ordered(ageData$Age, levels = c("Unknown","0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"))
 
 
-dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/25"),by="day")
-newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14)
+dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/27"),by="day")
+newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3)
 cumcases <- cumsum(newcases)
 timeData <- data.frame(dates,newcases,cumcases)
 font <- list(
@@ -93,7 +95,8 @@ HR_UID_dict <- list('Winnipeg Health Authority' = 'WRHA',
                     'Northern Region Authority' = 'NRHA',
                     'Prairie Mountain Health' = 'PMH',
                     'Interlake-Eastern Regional Health Authority' = 'IERHA',
-                    'Southern Health Sante Sud'= 'SHR')
+                    'Southern Health Sante Sud'= 'SHR',
+                    'Unknown'= 'Unknown')
 corona_data$Region <- `levels<-`(corona_data$HR_UID, HR_UID_dict)
 table.data <- corona_data %>%
   select(Region,Date.Reported,Gender,Age,Presumptive.Confirmed)
