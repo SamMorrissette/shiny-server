@@ -29,7 +29,7 @@ mb_map@polygons[[3]]@Polygons[[2]] <- NULL
 
 corona_data <- read.csv("Data.csv")
 cases <- corona_data %>% 
-  filter(HR_UID!='Unknown') %>%
+  filter(HR_UID!='Pending') %>%
   group_by(HR_UID) %>% 
   count()
 
@@ -63,7 +63,9 @@ mb_map$FULLNAME <- c("Northern Regional Health Authority",
                      "Winnipeg Regional Health Authority (Churchill)")
 
 popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
-                    "<b># of Total Cases: </b>", mb_map$n)
+                    "<b> Presumptive Cases: </b>", mb_map$Presumptive, "<br>",
+                    "<b> Confirmed Cases: </b>", mb_map$Confirmed, "<br>",
+                    "<b> Total Cases: </b>", mb_map$n)
 
 ageData <- corona_data %>% 
   group_by(Age) %>% 
@@ -74,11 +76,11 @@ empty <- data.frame(Age=c("10-19","90+"),
 empty$Age <- as.factor(empty$Age)
 ageData <- rbind(ageData,empty)
 
-ageData$Age <- ordered(ageData$Age, levels = c("Unknown","0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"))
+ageData$Age <- ordered(ageData$Age, levels = c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
 
 
-dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/28"),by="day")
-newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25)
+dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/29"),by="day")
+newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8)
 cumcases <- cumsum(newcases)
 timeData <- data.frame(dates,newcases,cumcases)
 font <- list(
@@ -96,7 +98,7 @@ HR_UID_dict <- list('Winnipeg Health Authority' = 'WRHA',
                     'Prairie Mountain Health' = 'PMH',
                     'Interlake-Eastern Regional Health Authority' = 'IERHA',
                     'Southern Health Sante Sud'= 'SHR',
-                    'Unknown'= 'Unknown')
+                    'Pending'= 'Pending')
 corona_data$Region <- `levels<-`(corona_data$HR_UID, HR_UID_dict)
 table.data <- corona_data %>%
   select(Region,Date.Reported,Gender,Age,Presumptive.Confirmed)
@@ -105,6 +107,9 @@ names(table.data) <- c("Region","Date Reported","Gender","Age Category", "Presum
 gender_data <- corona_data %>%
   group_by(Gender) %>%
   count()
+
+DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
+DIR$Status <- fct_inorder(DIR$Status)
 
 function(input, output, session) {
   output$map <- renderLeaflet({
@@ -123,6 +128,7 @@ function(input, output, session) {
       setView(lat=53.7609,lng=-98.8139,zoom=5)
     m
     })
+  
   output$ageHist <- renderPlotly({
     ageData <- ageData %>% 
       mutate(prop=n/sum(n))
@@ -140,6 +146,25 @@ function(input, output, session) {
       style(hoverlabel=label) %>%
       config(displayModeBar = F)
   })
+  
+  output$DIR <- renderPlotly({
+    DIR2 <- DIR %>% filter(Status != "Tested")
+    d <- plot_ly(DIR2,x=~Status,y=~Number,type='bar',
+                 marker = list(color = c('rgb(255,165,0)','rgb(0,137,0)','rgb(118,0,0)')),
+                 hovertemplate = '<b>Status:</b> %{x} <br> <b>Number:</b> %{y}<extra></extra>')
+    d <- d %>% 
+      config(displayModeBar = F) %>%
+      layout(title="Infected/Recovered/Deaths",
+             xaxis=list(title="Status"),
+             yaxis=list(title=""),
+             font=list(family="Arial",size=13))
+  })
+  
+  output$Tested <- renderText({
+    ntest <- DIR %>% filter(Status == "Tested")
+    ntest$Number
+  })
+
   
   output$timePlot <- renderPlotly({
     t <- plot_ly(timeData,x=~dates,y=~cumcases,type='scatter',name="Cumulative Cases",mode='lines',

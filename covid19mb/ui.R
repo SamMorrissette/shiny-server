@@ -23,6 +23,23 @@ navbarPage("Covid-19 in Manitoba", theme = shinytheme("cerulean"),
                                                  )
                                           )
                                  
+                                 ),
+                             div(style='padding:55px 0px 0px 0px',
+                                 column(8,
+                                        div(style="position:relative; left: 0px;",
+                                        fluidRow(plotlyOutput("DIR",width="60%",height=300))
+                                        )
+                                 ),
+                                 column(4,
+                                        
+                                        fluidRow(div(style="font-size:20px; text-align:center; position:relative; right: 100px;",
+                                                     p("Tests completed")),
+                                                 div(style="color:Purple; font-size: 30px; font-weight: bold; text-align:center; 
+                                                     position:relative; right: 100px;",
+                                                     textOutput("Tested"))
+                                        )
+                                                 
+                                        )
                                  )
                              )
                       )

@@ -5,8 +5,8 @@ account: samuelm
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1961134
-bundleId: 2938516
+bundleId: 2938526
 url: https://samuelm.shinyapps.io/covid19MB/
-when: 1585460757.70705
+when: 1585460996.58075
 asMultiple: FALSE
 asStatic: FALSE
