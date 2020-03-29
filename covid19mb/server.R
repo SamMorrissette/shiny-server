@@ -77,8 +77,8 @@ ageData <- rbind(ageData,empty)
 ageData$Age <- ordered(ageData$Age, levels = c("Unknown","0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"))
 
 
-dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/27"),by="day")
-newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3)
+dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/28"),by="day")
+newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25)
 cumcases <- cumsum(newcases)
 timeData <- data.frame(dates,newcases,cumcases)
 font <- list(
