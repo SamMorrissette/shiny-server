@@ -130,18 +130,20 @@ function(input, output, session) {
     })
   
   output$ageHist <- renderPlotly({
+    ageData$fills <- ifelse(ageData$Age == "Pending","black","darkgreen")
     ageData <- ageData %>% 
       mutate(prop=n/sum(n))
     ageData$prop <- round(ageData$prop,2)
     p <- ggplot(ageData,aes(text= paste0("<b> Age: </b>",Age, "<br>",
                                         "<b> # of Cases: </b>",n,"<br>",
                                         "<b> Proportion of Cases: </b> ",prop))) + 
-      geom_bar(aes(x=Age,y=n),stat="identity",fill="lightblue") +
+      geom_bar(aes(x=Age,y=n,fill=fills),stat="identity") +
+      scale_fill_identity() +
       theme_minimal() + 
       ylim(c(0,max(ageData$n+2))) +
       ylab("# of Cases") + 
       ggtitle("Age Distribution") +
-      theme(plot.title = element_text(hjust=0.5))
+      theme(plot.title = element_text(hjust=0.5),legend.position = "none")
     p %>% ggplotly(tooltip=c("text")) %>%
       style(hoverlabel=label) %>%
       config(displayModeBar = F)
@@ -184,7 +186,7 @@ function(input, output, session) {
   
   output$genderHist <- renderPlotly({
       t <- plot_ly(gender_data,x=~Gender,y=~n,type='bar',
-                   color=I("lightblue"),
+                   marker = list(color = c('rgb(223,82,134)','rgb(135,206,235)','rgb(0,0,0)')),
                    hovertemplate = '<b>Gender:</b> %{x} <br> <b># of Cases:</b> %{y}<extra></extra>')
       t <- t %>% 
         config(displayModeBar = F) %>%
