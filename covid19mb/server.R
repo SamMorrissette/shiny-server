@@ -73,6 +73,8 @@ label <- list(
 
 DIR$Status <- fct_inorder(DIR$Status)
 
+qpal <- colorNumeric(colorRamp(c("#FFFFFF", "#FF0000")), mb_map$n, n = 4)
+
 function(input, output, session) {
   output$map <- renderLeaflet({
     m <- leaflet(mb_map) %>% 
