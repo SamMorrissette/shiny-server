@@ -73,7 +73,9 @@ label <- list(
 
 DIR$Status <- fct_inorder(DIR$Status)
 
-qpal <- colorNumeric(colorRamp(c("#FFFFFF", "#FF0000")), mb_map$n, n = 4)
+
+qpal <- colorNumeric(colorRamp(c("#FFFFFF", "#FF0000")), 
+                     domain=c(0,mb_map$Total))
 
 function(input, output, session) {
   output$map <- renderLeaflet({
