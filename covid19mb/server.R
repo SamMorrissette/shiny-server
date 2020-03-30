@@ -1,7 +1,5 @@
 library(leaflet)
-#library(dygraphs)
 library(plotly)
-#library(xts)
 library(lubridate)
 library(DT)
 library(rgdal)
@@ -27,33 +25,18 @@ ps <- Polygons(list(p1),ID=11)
 mb_map@polygons[[6]] <- ps
 mb_map@polygons[[3]]@Polygons[[2]] <- NULL
 
-corona_data <- read.csv("Data.csv")
-cases <- corona_data %>% 
-  filter(HR_UID!='Pending') %>%
-  group_by(HR_UID) %>% 
-  count()
+cases <- read.csv('CaseData.csv')
+ageData <- read.csv("AgeData.csv")
+gender_data <- read.csv("GenderData.csv")
+DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
 
 
 mb_map$HR_UID <- c("NRHA","SHR","WRHA","PMH","IERHA","WRHA-CH")
 mb_map <- merge(mb_map,cases,all.x=TRUE)
-mb_map$n[is.na(mb_map$n)] <- 0
+mb_map$Total[is.na(mb_map$Total)] <- 0
 
-presumptive <- corona_data %>% 
-  group_by(HR_UID,Presumptive.Confirmed) %>%
-  summarise(n=n()) %>%
-  ungroup() %>%
-  spread(Presumptive.Confirmed,n,fill=0)
-
-mb_map <- merge(mb_map,presumptive,all.x=TRUE)
 mb_map$Confirmed[is.na(mb_map$Confirmed)] <- 0
 mb_map$Presumptive[is.na(mb_map$Presumptive)] <- 0
-
-max.cases <- max(mb_map$n)
-qpal <- colorNumeric(colorRamp(c("#FFFFFF", "#FF0000")), mb_map$n, n = 4)
-
-marker_coords <- data.frame(lat=c(56.938653,49.874008,51.255479),
-                            lon=c(-97.468105,-97.155128,-96.737120))
-marker_radius=c(8,8,8)
 
 mb_map$FULLNAME <- c("Northern Regional Health Authority",
                      "Southern Health-Sante Sud",
@@ -65,24 +48,19 @@ mb_map$FULLNAME <- c("Northern Regional Health Authority",
 popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
                     "<b> Presumptive Cases: </b>", mb_map$Presumptive, "<br>",
                     "<b> Confirmed Cases: </b>", mb_map$Confirmed, "<br>",
-                    "<b> Total Cases: </b>", mb_map$n)
-
-ageData <- corona_data %>% 
-  group_by(Age) %>% 
-  count() %>%
-  as.data.frame()
-empty <- data.frame(Age=c("10-19","90+"),
-           n=c(0,0))
-empty$Age <- as.factor(empty$Age)
-ageData <- rbind(ageData,empty)
-
-ageData$Age <- ordered(ageData$Age, levels = c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
+                    "<b> Total Cases: </b>", mb_map$Total)
 
 
-dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/29"),by="day")
-newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8)
+
+ageData$Age <- as.factor(ageData$Age)
+ageData$Age <- ordered(ageData$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
+
+
+dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/30"),by="day")
+newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8,24)
 cumcases <- cumsum(newcases)
 timeData <- data.frame(dates,newcases,cumcases)
+
 font <- list(
   size = 15,
   color = "black"
@@ -93,22 +71,6 @@ label <- list(
   font=font
 )
 
-HR_UID_dict <- list('Winnipeg Health Authority' = 'WRHA',
-                    'Northern Region Authority' = 'NRHA',
-                    'Prairie Mountain Health' = 'PMH',
-                    'Interlake-Eastern Regional Health Authority' = 'IERHA',
-                    'Southern Health Sante Sud'= 'SHR',
-                    'Pending'= 'Pending')
-corona_data$Region <- `levels<-`(corona_data$HR_UID, HR_UID_dict)
-table.data <- corona_data %>%
-  select(Region,Date.Reported,Gender,Age,Presumptive.Confirmed)
-names(table.data) <- c("Region","Date Reported","Gender","Age Category", "Presumptive/Confirmed")
-
-gender_data <- corona_data %>%
-  group_by(Gender) %>%
-  count()
-
-DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
 DIR$Status <- fct_inorder(DIR$Status)
 
 function(input, output, session) {
@@ -118,11 +80,11 @@ function(input, output, session) {
       addPolygons(weight=1,
                   color="Grey",
                   fillOpacity=0.5,
-                  fillColor=~qpal(mb_map$n),
+                  fillColor=~qpal(mb_map$Total),
                   popup=popup_info)  %>%
       leaflet::addLegend(position=c("bottomright"),
                 pal=qpal,
-                values=~mb_map$n,
+                values=~mb_map$Total,
                 opacity=.5,
                 title="# of Cases") %>%
       setView(lat=53.7609,lng=-98.8139,zoom=5)
@@ -130,17 +92,17 @@ function(input, output, session) {
     })
   
   output$ageHist <- renderPlotly({
-    ageData$fills <- ifelse(ageData$Age == "Pending","black","darkgreen")
+    ageData$fills <- ifelse(ageData$Age == "Pending","gray","darkgreen")
     ageData <- ageData %>% 
-      mutate(prop=n/sum(n))
+      mutate(prop=Count/sum(Count))
     ageData$prop <- round(ageData$prop,2)
     p <- ggplot(ageData,aes(text= paste0("<b> Age: </b>",Age, "<br>",
-                                        "<b> # of Cases: </b>",n,"<br>",
+                                        "<b> # of Cases: </b>",Count,"<br>",
                                         "<b> Proportion of Cases: </b> ",prop))) + 
-      geom_bar(aes(x=Age,y=n,fill=fills),stat="identity") +
+      geom_bar(aes(x=Age,y=Count,fill=fills),stat="identity") +
       scale_fill_identity() +
       theme_minimal() + 
-      ylim(c(0,max(ageData$n+2))) +
+      ylim(c(0,max(ageData$Count+2))) +
       ylab("# of Cases") + 
       ggtitle("Age Distribution") +
       theme(plot.title = element_text(hjust=0.5),legend.position = "none")
@@ -185,8 +147,8 @@ function(input, output, session) {
     })
   
   output$genderHist <- renderPlotly({
-      t <- plot_ly(gender_data,x=~Gender,y=~n,type='bar',
-                   marker = list(color = c('rgb(223,82,134)','rgb(135,206,235)','rgb(0,0,0)')),
+      t <- plot_ly(gender_data,x=~Gender,y=~Count,type='bar',
+                   marker = list(color = c('rgb(135,206,235)','rgb(223,82,134)','rgb(192,192,192)')),
                    hovertemplate = '<b>Gender:</b> %{x} <br> <b># of Cases:</b> %{y}<extra></extra>')
       t <- t %>% 
         config(displayModeBar = F) %>%
@@ -199,12 +161,12 @@ function(input, output, session) {
     })
     
     
-  output$data.table <- renderDataTable({
-    DT::datatable(table.data,
-                  rownames = FALSE,
-                  options = list(autoWidth=TRUE)
-    )
-  })
+  # output$data.table <- renderDataTable({
+  #   DT::datatable(table.data,
+  #                 rownames = FALSE,
+  #                 options = list(autoWidth=TRUE)
+  #   )
+  # })
   
   output$downloadData <- downloadHandler(
     filename = function() {

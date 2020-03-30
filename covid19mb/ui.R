@@ -44,15 +44,17 @@ navbarPage("Covid-19 in Manitoba", theme = shinytheme("cerulean"),
                              )
                       )
                     ),
-           tabPanel("Data",
-                    fluidRow(
-                      column(8,
-                             DT::dataTableOutput("data.table")),
-                      column(4,
-                             downloadButton("downloadData", "Export to CSV")
-                      )
-                    )
-           ),
+           
+           # tabPanel("Data",
+           #          fluidRow(
+           #            column(8,
+           #                   DT::dataTableOutput("data.table")),
+           #            column(4,
+           #                   downloadButton("downloadData", "Export to CSV")
+           #            )
+           #          )
+           # ),
+           
            tabPanel("About",
                     h1("Data"),
                     p("All data is collected from the Novel Coronavirus (COVID-19) Bulletins posted on the Manitoba government website. 
