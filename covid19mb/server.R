@@ -26,8 +26,9 @@ mb_map@polygons[[6]] <- ps
 mb_map@polygons[[3]]@Polygons[[2]] <- NULL
 
 cases <- read.csv('CaseData.csv')
-ageData <- read.csv("AgeData.csv")
-gender_data <- read.csv("GenderData.csv")
+#ageData <- read.csv("AgeData.csv")
+#gender_data <- read.csv("GenderData.csv")
+ageGender <- read.csv("AgeGenderData.csv")
 DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
 
 
@@ -52,12 +53,13 @@ popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
 
 
 
-ageData$Age <- as.factor(ageData$Age)
-ageData$Age <- ordered(ageData$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
+# ageData$Age <- as.factor(ageData$Age)
+# ageData$Age <- ordered(ageData$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
+ageGender$Age <- as.factor(ageGender$Age)
+ageGender$Age <- ordered(ageGender$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
 
-
-dates <- seq.Date(from=as.Date("2020/03/01"),to=as.Date("2020/03/31"),by="day")
-newcases <- c(0,0,0,0,0,0,0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8,24,7)
+dates <- seq.Date(from=as.Date("2020/03/07"),to=as.Date("2020/04/01"),by="day")
+newcases <- c(0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8,24,7,24)
 cumcases <- cumsum(newcases)
 timeData <- data.frame(dates,newcases,cumcases)
 
@@ -96,24 +98,23 @@ function(input, output, session) {
     })
   
   output$ageHist <- renderPlotly({
-    ageData$fills <- ifelse(ageData$Age == "Pending","gray","darkgreen")
-    ageData <- ageData %>% 
-      mutate(prop=Count/sum(Count))
-    ageData$prop <- round(ageData$prop,2)
-    p <- ggplot(ageData,aes(text= paste0("<b> Age: </b>",Age, "<br>",
-                                        "<b> # of Cases: </b>",Count,"<br>",
-                                        "<b> Proportion of Cases: </b> ",prop))) + 
-      geom_bar(aes(x=Age,y=Count,fill=fills),stat="identity") +
-      scale_fill_identity() +
-      theme_minimal() + 
-      ylim(c(0,max(ageData$Count+2))) +
-      ylab("# of Cases") + 
-      ggtitle("Age Distribution") +
-      theme(plot.title = element_text(hjust=0.5),legend.position = "none")
-    p %>% ggplotly(tooltip=c("text")) %>%
+    # ageGender <- ageGender %>% 
+    #   mutate(maleprop=(MaleCount)/(sum(MaleCount)+sum(FemaleCount))) %>%
+    #   mutate(femaleprop=(FemaleCount)/(sum(MaleCount)+sum(FemaleCount)))
+
+    p <- plot_ly(ageGender,x=~Age,y=~MaleCount,type='bar', name="Male",
+                 marker = list(color = 'rgb(135,206,235)'),
+                 hovertemplate = '<b>Age:</b> %{x} <br> <b>Gender:</b> Male <br> <b># of Cases:</b> %{y} <br><extra></extra>') %>%
+      add_trace(y=~FemaleCount,name="Female",
+                marker = list(color = 'rgb(223,82,134)'),
+                hovertemplate = '<b>Age:</b> %{x} <br> <b>Gender:</b> Female <br> <b># of Cases:</b> %{y}<extra></extra>') %>%
+      config(displayModeBar = F) %>%
       style(hoverlabel=label) %>%
-      config(displayModeBar = F)
-  })
+      layout(title="Age Distribution",
+             xaxis=list(title="Age"),
+             yaxis=list(title="# of cases"),
+             font=list(family="Arial",size=13))
+    })
   
   output$DIR <- renderPlotly({
     DIR2 <- DIR %>% filter(Status != "Tested")
@@ -130,7 +131,7 @@ function(input, output, session) {
   
   output$Tested <- renderText({
     ntest <- DIR %>% filter(Status == "Tested")
-    ntest$Number
+    prettyNum(ntest$Number,big.mark=",")
   })
 
   
@@ -151,13 +152,16 @@ function(input, output, session) {
     })
   
   output$genderHist <- renderPlotly({
+      male <- sum(ageGender$MaleCount)
+      female <- sum(ageGender$FemaleCount)
+      gender_data <- data.frame(Gender=c("M","F"),Count=c(male,female))
       t <- plot_ly(gender_data,x=~Gender,y=~Count,type='bar',
                    marker = list(color = c('rgb(135,206,235)','rgb(223,82,134)','rgb(192,192,192)')),
                    hovertemplate = '<b>Gender:</b> %{x} <br> <b># of Cases:</b> %{y}<extra></extra>')
       t <- t %>% 
         config(displayModeBar = F) %>%
         style(hoverlabel=label) %>%
-        layout(title="Gender Distribution",
+        layout(title="Total Gender Distribution",
                xaxis=list(title="Gender"),
                yaxis=list(title=""),
                font=list(family="Arial",size=13))
