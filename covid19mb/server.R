@@ -58,8 +58,8 @@ popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
 ageGender$Age <- as.factor(ageGender$Age)
 ageGender$Age <- ordered(ageGender$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
 
-dates <- seq.Date(from=as.Date("2020/03/07"),to=as.Date("2020/04/01"),by="day")
-newcases <- c(0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8,24,7,24)
+dates <- seq.Date(from=as.Date("2020/03/07"),to=as.Date("2020/04/02"),by="day")
+newcases <- c(0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8,24,7,24,40)
 cumcases <- cumsum(newcases)
 timeData <- data.frame(dates,newcases,cumcases)
 
