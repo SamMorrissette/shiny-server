@@ -18,7 +18,7 @@ categories <- data$x$data$y[[1]]
 fullData <- data.frame(Age=categories,
                        MaleCount=males,
                        FemaleCount=females)
-write.csv(fullData,'AgeGenderData.csv',row.names=FALSE)
+write.csv(fullData,'/srv/shiny-server/covid19mb/AgeGenderData.csv',row.names=FALSE)
 
 #TABLE
 mainpage <- read_html('https://www.gov.mb.ca/covid19/updates/index.html')
@@ -65,7 +65,7 @@ if (updatedDate != lastDate) {
                        new=newNew,
                        cumulative=newCum)
   newData <- rbind(epiCurve,newRow)
-  write.csv(newData,'epicurve.csv',row.names = FALSE)
+  write.csv(newData,'/srv/shiny-server/covid19mb/epicurve.csv',row.names = FALSE)
 }
 
 #Number of tests
@@ -84,4 +84,4 @@ deaths <- tbls_ls[[1]]$Deaths[6]
 infected <- tbls_ls[[1]]$`Total Cases`[6] - (recovered+deaths)
 DIR <- data.frame(Status=c("Infected", "Recovered", "Deaths", "Tested"),
                   Number=c(infected,recovered,deaths,numTests))
-write.csv(DIR,"Recovered.csv",row.names=FALSE)
+write.csv(DIR,"/srv/shiny-server/covid19mb/Recovered.csv",row.names=FALSE)
