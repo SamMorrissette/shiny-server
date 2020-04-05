@@ -26,16 +26,13 @@ mb_map@polygons[[6]] <- ps
 mb_map@polygons[[3]]@Polygons[[2]] <- NULL
 
 cases <- read.csv('CaseData.csv')
-#ageData <- read.csv("AgeData.csv")
-#gender_data <- read.csv("GenderData.csv")
 ageGender <- read.csv("AgeGenderData.csv")
 DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
-
+epiCurve <- read.csv("epicurve.csv")
 
 mb_map$HR_UID <- c("NRHA","SHR","WRHA","PMH","IERHA","WRHA-CH")
 mb_map <- merge(mb_map,cases,all.x=TRUE)
 mb_map$Total[is.na(mb_map$Total)] <- 0
-
 mb_map$Confirmed[is.na(mb_map$Confirmed)] <- 0
 mb_map$Presumptive[is.na(mb_map$Presumptive)] <- 0
 
@@ -52,16 +49,12 @@ popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
                     "<b> Total Cases: </b>", mb_map$Total)
 
 
-
-# ageData$Age <- as.factor(ageData$Age)
-# ageData$Age <- ordered(ageData$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
 ageGender$Age <- as.factor(ageGender$Age)
-ageGender$Age <- ordered(ageGender$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+","Pending"))
+ageGender$Age <- ordered(ageGender$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90-99","100+"))
 
-dates <- seq.Date(from=as.Date("2020/03/07"),to=as.Date("2020/04/04"),by="day")
-newcases <- c(0,0,0,0,0,3,1,0,3,1,7,2,0,0,2,1,0,1,14,1,3,25,8,24,7,24,40,15,12)
-cumcases <- cumsum(newcases)
-timeData <- data.frame(dates,newcases,cumcases)
+
+timeData <- epiCurve
+timeData$date <- as.Date(timeData$date)
 
 font <- list(
   size = 15,
