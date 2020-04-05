@@ -2,6 +2,7 @@ library(rvest)
 library(tidyverse)
 library(jsonlite)
 
+print(getwd())
 today <- format(Sys.Date(),"%Y%m%d")
 #MALE VS FEMALE AND AGE
 url <- paste0('https://manitoba.ca/health/publichealth/public_app/By_age_sex_',today,'.html')
