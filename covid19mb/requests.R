@@ -85,3 +85,6 @@ infected <- tbls_ls[[1]]$`Total Cases`[6] - (recovered+deaths)
 DIR <- data.frame(Status=c("Infected", "Recovered", "Deaths", "Tested"),
                   Number=c(infected,recovered,deaths,numTests))
 write.csv(DIR,"/srv/shiny-server/covid19mb/Recovered.csv",row.names=FALSE)
+
+text <- paste("Last updated:",Sys.time())
+write.table(text,"/srv/shiny-server/covid19mb/LastUpdated.txt")
