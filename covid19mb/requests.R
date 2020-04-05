@@ -46,7 +46,7 @@ fullDataFrame <- data.frame(HR_UID=HR_UID,
                             Total=Total)
 write.csv(fullDataFrame,'CaseData.csv',row.names=FALSE)
 
-epiCurve <- read.csv('epicurve.csv')
+epiCurve <- read.csv('/srv/shiny-server/covid19mb/epicurve.csv')
 epiCurve$date <- as.Date(epiCurve$date)
 
 #Check to see if the last updated date is the same as the last date in the csv file.
