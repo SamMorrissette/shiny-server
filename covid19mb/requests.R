@@ -44,7 +44,7 @@ fullDataFrame <- data.frame(HR_UID=HR_UID,
                             Presumptive=Presumptive,
                             Confirmed=Confirmed,
                             Total=Total)
-write.csv(fullDataFrame,'CaseData.csv',row.names=FALSE)
+write.csv(fullDataFrame,'/srv/shiny-server/covid19mb/CaseData.csv',row.names=FALSE)
 
 epiCurve <- read.csv('/srv/shiny-server/covid19mb/epicurve.csv')
 epiCurve$date <- as.Date(epiCurve$date)
