@@ -50,7 +50,7 @@ popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
 
 
 ageGender$Age <- as.factor(ageGender$Age)
-ageGender$Age <- ordered(ageGender$Age, levels = c("0-9"," 10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90-99","100+"))
+ageGender$Age <- ordered(ageGender$Age, levels = c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90-99","100+"))
 
 
 timeData <- epiCurve
@@ -129,9 +129,9 @@ function(input, output, session) {
 
   
   output$timePlot <- renderPlotly({
-    t <- plot_ly(timeData,x=~dates,y=~cumcases,type='scatter',name="Cumulative Cases",mode='lines',
+    t <- plot_ly(timeData,x=~date,y=~cumulative,type='scatter',name="Cumulative Cases",mode='lines',
                  hovertemplate = '<b>Date:</b> %{x} <br> <b>Cumulative Cases:</b> %{y}<extra></extra>')
-    t <- t %>% add_trace(y=newcases,type='bar',name="New Cases",
+    t <- t %>% add_trace(timeData,y=~new,type='bar',name="New Cases",
                          hovertemplate = '<b>Date:</b> %{x} <br> <b>New Cases:</b> %{y}<extra></extra>')
     t <- t %>% 
       config(displayModeBar = F) %>%
