@@ -25,54 +25,53 @@ ps <- Polygons(list(p1),ID=11)
 mb_map@polygons[[6]] <- ps
 mb_map@polygons[[3]]@Polygons[[2]] <- NULL
 
-cases <- read.csv('CaseData.csv')
-ageGender <- read.csv("AgeGenderData.csv")
-DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
-epiCurve <- read.csv("epicurve.csv")
-
-mb_map$HR_UID <- c("NRHA","SHR","WRHA","PMH","IERHA","WRHA-CH")
-mb_map <- merge(mb_map,cases,all.x=TRUE)
-mb_map$Total[is.na(mb_map$Total)] <- 0
-mb_map$Confirmed[is.na(mb_map$Confirmed)] <- 0
-mb_map$Presumptive[is.na(mb_map$Presumptive)] <- 0
-
-mb_map$FULLNAME <- c("Northern Regional Health Authority",
-                     "Southern Health-Sante Sud",
-                     "Winnipeg Regional Health Authority",
-                     "Prairie Mountain Health",
-                     "Interlake-Eastern Regional Health Authority",
-                     "Winnipeg Regional Health Authority (Churchill)")
-
-popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
-                    "<b> Presumptive Cases: </b>", mb_map$Presumptive, "<br>",
-                    "<b> Confirmed Cases: </b>", mb_map$Confirmed, "<br>",
-                    "<b> Total Cases: </b>", mb_map$Total)
-
-
-ageGender$Age <- as.factor(ageGender$Age)
-ageGender$Age <- ordered(ageGender$Age, levels = c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90-99","100+"))
-
-
-timeData <- epiCurve
-timeData$date <- as.Date(timeData$date)
-
-font <- list(
-  size = 15,
-  color = "black"
-)
-label <- list(
-  bgcolor = "#FFFFFF",
-  bordercolor = "transparent",
-  font=font
-)
-
-DIR$Status <- fct_inorder(DIR$Status)
-
-
-qpal <- colorNumeric(colorRamp(c("#FFFFFF", "#FF0000")), 
-                     domain=c(0,mb_map$Total))
-
 function(input, output, session) {
+  cases <- read.csv('CaseData.csv')
+  ageGender <- read.csv("AgeGenderData.csv")
+  DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
+  epiCurve <- read.csv("epicurve.csv")
+  
+  mb_map$HR_UID <- c("NRHA","SHR","WRHA","PMH","IERHA","WRHA-CH")
+  mb_map <- merge(mb_map,cases,all.x=TRUE)
+  mb_map$Total[is.na(mb_map$Total)] <- 0
+  mb_map$Confirmed[is.na(mb_map$Confirmed)] <- 0
+  mb_map$Presumptive[is.na(mb_map$Presumptive)] <- 0
+  
+  mb_map$FULLNAME <- c("Northern Regional Health Authority",
+                       "Southern Health-Sante Sud",
+                       "Winnipeg Regional Health Authority",
+                       "Prairie Mountain Health",
+                       "Interlake-Eastern Regional Health Authority",
+                       "Winnipeg Regional Health Authority (Churchill)")
+  
+  popup_info = paste0("<b> Region: </b>", mb_map$FULLNAME, "<br>",
+                      "<b> Presumptive Cases: </b>", mb_map$Presumptive, "<br>",
+                      "<b> Confirmed Cases: </b>", mb_map$Confirmed, "<br>",
+                      "<b> Total Cases: </b>", mb_map$Total)
+  
+  
+  ageGender$Age <- as.factor(ageGender$Age)
+  ageGender$Age <- ordered(ageGender$Age, levels = c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90-99","100+"))
+  
+  
+  timeData <- epiCurve
+  timeData$date <- as.Date(timeData$date)
+  
+  font <- list(
+    size = 15,
+    color = "black"
+  )
+  label <- list(
+    bgcolor = "#FFFFFF",
+    bordercolor = "transparent",
+    font=font
+  )
+  
+  DIR$Status <- fct_inorder(DIR$Status)
+  
+  
+  qpal <- colorNumeric(colorRamp(c("#FFFFFF", "#FF0000")), 
+                       domain=c(0,mb_map$Total))
   output$map <- renderLeaflet({
     m <- leaflet(mb_map) %>% 
       addProviderTiles(providers$CartoDB.Positron) %>% 
