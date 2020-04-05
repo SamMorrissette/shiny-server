@@ -2,11 +2,29 @@ library(rvest)
 library(tidyverse)
 library(jsonlite)
 
-print(getwd())
-today <- format(Sys.Date(),"%Y%m%d")
+readURL <- function(url) {
+  out <- tryCatch(
+    expr= {
+      read_html(url)
+    },
+    error = function(e) {
+      return(NA)
+    }
+  )
+  return(out)
+}
+
 #MALE VS FEMALE AND AGE
+today <- format(Sys.Date(),"%Y%m%d")
 url <- paste0('https://manitoba.ca/health/publichealth/public_app/By_age_sex_',today,'.html')
-webpage <- read_html(url)
+webpage <- readURL(url)
+
+if (is.na(webpage)) {
+  yesterday <- format(Sys.Date()-1,"%Y%m%d")
+  url <- paste0('https://manitoba.ca/health/publichealth/public_app/By_age_sex_',yesterday,'.html')
+  webpage <- readURL(url)
+}
+
 data <- webpage %>% 
   html_nodes('script') %>% 
   html_text() %>% 
