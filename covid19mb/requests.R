@@ -110,7 +110,7 @@ if (numTests != testsCompleted$TestsCompleted[nrow(testsCompleted)]) {
 recovered <- html_nodes(mainpage,"li") %>% 
   grep(pattern="recovered from COVID-19",value=TRUE) %>%
   str_extract("(\\d{0,3},)?(\\d{3},)?\\d{0,3}(?=\\s+individuals)")
-recovered <- as.numericg(gsub("\\,", "", recovered))
+recovered <- as.numeric(gsub("\\,", "", recovered))
 deaths <- tbls_ls[[1]]$Deaths[6]
 infected <- tbls_ls[[1]]$`Total Cases`[6] - (recovered+deaths)
 DIR <- data.frame(Status=c("Infected", "Recovered", "Deaths", "Tested"),
