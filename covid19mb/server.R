@@ -31,6 +31,7 @@ function(input, output, session) {
   DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
   epiCurve <- read.csv("epicurve.csv")
   tests <- read.csv("TestsCompleted.csv")
+  infstat <- read.csv("InfectedStatus.csv",stringsAsFactors = TRUE)
   
   mb_map$HR_UID <- c("NRHA","SHR","WRHA","PMH","IERHA","WRHA-CH")
   mb_map <- merge(mb_map,cases,all.x=TRUE)
@@ -61,17 +62,15 @@ function(input, output, session) {
   tests$Date <- as.Date(tests$Date,format="%d-%m-%Y")
   
   font <- list(
-    size = 15,
-    color = "black"
+    size = 15
+    #color = "black"
   )
   label <- list(
-    bgcolor = "#FFFFFF",
-    bordercolor = "transparent",
-    font=font
+    namelength = -1
   )
   
   DIR$Status <- fct_inorder(DIR$Status)
-  
+  infstat$Status <- fct_inorder(infstat$Status)
   
   qpal <- colorNumeric(colorRamp(c("#FFFFFF", "#FF0000")), 
                        domain=c(0,mb_map$Total))
@@ -93,10 +92,6 @@ function(input, output, session) {
     })
   
   output$ageHist <- renderPlotly({
-    # ageGender <- ageGender %>% 
-    #   mutate(maleprop=(MaleCount)/(sum(MaleCount)+sum(FemaleCount))) %>%
-    #   mutate(femaleprop=(FemaleCount)/(sum(MaleCount)+sum(FemaleCount)))
-
     p <- plot_ly(ageGender,x=~Age,y=~MaleCount,type='bar', name="Male",
                  marker = list(color = 'rgb(135,206,235)'),
                  hovertemplate = '<b>Age:</b> %{x} <br> <b>Gender:</b> Male <br> <b># of Cases:</b> %{y} <br><extra></extra>') %>%
@@ -108,7 +103,8 @@ function(input, output, session) {
       layout(title="Age Distribution",
              xaxis=list(title="Age"),
              yaxis=list(title="# of cases"),
-             font=list(family="Arial",size=13))
+             font=list(family="Arial",size=13),
+             legend=list(x=0.8,y=0.8))
     })
   
   output$DIR <- renderPlotly({
@@ -125,29 +121,43 @@ function(input, output, session) {
   })
   
   output$Tested <- renderPlotly({
-    a <- plot_ly(tests,x=~Date,y=~TestsCompleted,type='scatter',name="Tests Completed",mode='lines',line=list(color="Purple"),
-                 hovertemplate = '<b>Date:</b> %{x} <br> <b>Tests Completed:</b> %{y}<extra></extra>')
+    a <- plot_ly(tests,x=~Date,y=~TestsCompleted,type='scatter',name="Tests Completed",mode='markers+lines',
+                 line=list(color="Purple"),
+                 marker=list(color="Purple"))
+                 #hovertemplate = '<b>Date:</b> %{x} <br> <b>Total Tests:</b> %{y}<extra></extra>')
+    a <- a %>% add_trace(tests,y=~New,type='bar',name="New Tests",
+                         marker=list(color=c('rgb(153,204,153')))
+                         #hovertemplate = '<b>Date:</b> %{x} <br> <b>New Tests:</b> %{y}<extra></extra>')
     a <- a %>% 
       config(displayModeBar = F) %>%
       style(hoverlabel=label) %>%
       layout(title="Total Tests Completed",
-             #legend=list(x=0.1,y=0.9,bgcolor='#E2E2E2'),
+             legend=list(x=0.1,y=0.9,bgcolor='#E2E2E2'),
              xaxis=list(title="",dtick=86400000.0,tickangle=45,ticklen=5,showgrid=TRUE,automargin=FALSE),
              margin=list(l=50,r=25,b=50),
              yaxis=list(title="# of Tests"),
+             font=list(family="Arial",size=13),
+             hovermode="x unified")
+  })
+  
+  output$infected <- renderPlotly({
+    s <- plot_ly(infstat,x=~Status,y=~Number,type='bar',
+                 marker = list(color = c('rgb(51,102,153)','rgb(208,138,175)','rgb(170,1,120)')),
+                 hovertemplate = '<b>Status:</b> %{x} <br> <b>Number:</b> %{y}<extra></extra>')
+    s <- s %>% 
+      config(displayModeBar = F) %>%
+      layout(title="Infected Status",
+             xaxis=list(title="Status of Infected Cases"),
+             yaxis=list(title=""),
              font=list(family="Arial",size=13))
   })
-  # output$Tested <- renderText({
-  #   ntest <- DIR %>% filter(Status == "Tested")
-  #   prettyNum(ntest$Number,big.mark=",")
-  # })
 
   
   output$timePlot <- renderPlotly({
-    t <- plot_ly(timeData,x=~date,y=~cumulative,type='scatter',name="Cumulative Cases",mode='lines',
-                 hovertemplate = '<b>Date:</b> %{x} <br> <b>Cumulative Cases:</b> %{y}<extra></extra>')
-    t <- t %>% add_trace(timeData,y=~new,type='bar',name="New Cases",
-                         hovertemplate = '<b>Date:</b> %{x} <br> <b>New Cases:</b> %{y}<extra></extra>')
+    t <- plot_ly(timeData,x=~date,y=~cumulative,type='scatter',name="Cumulative Cases",mode='markers+lines')
+                 #hovertemplate = '<b>Cumulative Cases:</b> %{y}<extra></extra>')
+    t <- t %>% add_trace(timeData,y=~new,type='bar',name="New Cases")
+                         #hovertemplate = '<b>New Cases:</b> %{y}<extra></extra>')
     t <- t %>% 
       config(displayModeBar = F) %>%
       style(hoverlabel=label) %>%
@@ -155,7 +165,8 @@ function(input, output, session) {
              legend=list(x=0.1,y=0.9,bgcolor='#E2E2E2'),
              xaxis=list(title="",dtick=86400000.0,tickangle=45,ticklen=5,showgrid=TRUE),
              yaxis=list(title="# of Cases"),
-             font=list(family="Arial",size=13))
+             font=list(family="Arial",size=13),
+             hovermode="x unified")
     t
     })
   

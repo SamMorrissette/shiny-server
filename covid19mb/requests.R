@@ -97,10 +97,12 @@ testsCompleted$Date <- as.Date(testsCompleted$Date,format="%d-%m-%Y")
 newData <- data.frame()
 
 if (numTests != testsCompleted$TestsCompleted[nrow(testsCompleted)]) {
+  newTests <- numTests-testsCompleted$TestsCompleted[nrow(testsCompleted)]
   newData <- data.frame(Date=c(testsCompleted$Date,
                                testsCompleted$Date[nrow(testsCompleted)]+1),
                         TestsCompleted=c(testsCompleted$TestsCompleted,
-                                         numTests))
+                                         numTests),
+                        newTests=c(testsCompleted$New,newTests))
   write.csv(testsCompleted,'/srv/shiny-server/covid19mb/TestsCompleted.csv',row.names=FALSE)
 }
 
@@ -108,7 +110,7 @@ if (numTests != testsCompleted$TestsCompleted[nrow(testsCompleted)]) {
 recovered <- html_nodes(mainpage,"li") %>% 
   grep(pattern="recovered from COVID-19",value=TRUE) %>%
   str_extract("(\\d{0,3},)?(\\d{3},)?\\d{0,3}(?=\\s+individuals)")
-recovered <- as.numeric(gsub("\\,", "", recovered))
+recovered <- as.numericg(gsub("\\,", "", recovered))
 deaths <- tbls_ls[[1]]$Deaths[6]
 infected <- tbls_ls[[1]]$`Total Cases`[6] - (recovered+deaths)
 DIR <- data.frame(Status=c("Infected", "Recovered", "Deaths", "Tested"),

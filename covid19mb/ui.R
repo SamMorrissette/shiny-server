@@ -19,12 +19,15 @@ navbarPage("Covid-19 in Manitoba", theme = shinytheme("cerulean"),
                              )
                       ),
                       column(12,
-                             div(style='padding:50px 0px 0px 0px',
+                             div(style='padding:50px 0px 50px 0px',
                                  fluidRow(column(6,
-                                                 plotlyOutput("ageHist",width="100%",height=300)
+                                                 plotlyOutput("ageHist",width="90%",height=300)
                                                  ),
-                                          column(5, offset=1,
-                                                 fluidRow(plotlyOutput("DIR",width="50%",height=300))
+                                          column(3,
+                                                 fluidRow(plotlyOutput("DIR",width="80%",height=300))
+                                                 ),
+                                          column(3,
+                                                 plotlyOutput("infected",height=300)
                                                  )
                                           )
                                  )
