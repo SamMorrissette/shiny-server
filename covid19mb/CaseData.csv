@@ -1,7 +1,7 @@
-HR_UID,Region,Presumptive,Confirmed,Total
-IERHA,Interlake-Eastern Regional Health Authority,0,10,10
-NRHA,Northern Regional Health Authority,0,2,2
-PMH,Prairie Mountain Health,0,11,11
-SHR,Southern Health-Sante Sud,6,17,23
-WRHA,Winnipeg Regional Health Authority,9,148,157
-WRHA-CH,Winnipeg Regional Health Authority (Churchill),0,0,0
+"HR_UID","Region","Presumptive","Confirmed","Total"
+"IERHA","Interlake-Eastern Regional Health Authority",0,11,11
+"NRHA","Northern Regional Health Authority",0,3,3
+"PMH","Prairie Mountain Health",0,11,11
+"SHR","Southern Health-Sante Sud",4,19,23
+"WRHA","Winnipeg Regional Health Authority",10,159,169
+"WRHA-CH","Winnipeg Regional Health Authority (Churchill)",0,0,0

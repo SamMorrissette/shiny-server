@@ -92,6 +92,17 @@ numTests <- html_nodes(mainpage,"p") %>%
   str_extract(pattern="(\\d{0,3},)?(\\d{3},)?\\d{0,3}(?=\\s+tests)")
 numTests <- as.numeric(gsub("\\,", "", numTests))
 
+testsCompleted <- read.csv('/srv/shiny-server/covid19mb/TestsCompleted.csv')
+testsCompleted$Date <- as.Date(testsCompleted$Date,format="%d-%m-%Y")
+newData <- data.frame()
+
+if (numTests != testsCompleted$TestsCompleted[nrow(testsCompleted)]) {
+  newData <- data.frame(Date=c(testsCompleted$Date,
+                               testsCompleted$Date[nrow(testsCompleted)]+1),
+                        TestsCompleted=c(testsCompleted$TestsCompleted,
+                                         numTests))
+  write.csv(testsCompleted,'/srv/shiny-server/covid19mb/TestsCompleted.csv',row.names=FALSE)
+}
 
 #DIR
 recovered <- html_nodes(mainpage,"li") %>% 

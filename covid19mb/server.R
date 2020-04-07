@@ -30,6 +30,7 @@ function(input, output, session) {
   ageGender <- read.csv("AgeGenderData.csv")
   DIR <- read.csv("Recovered.csv",stringsAsFactors = TRUE)
   epiCurve <- read.csv("epicurve.csv")
+  tests <- read.csv("TestsCompleted.csv")
   
   mb_map$HR_UID <- c("NRHA","SHR","WRHA","PMH","IERHA","WRHA-CH")
   mb_map <- merge(mb_map,cases,all.x=TRUE)
@@ -56,6 +57,8 @@ function(input, output, session) {
   
   timeData <- epiCurve
   timeData$date <- as.Date(timeData$date)
+  
+  tests$Date <- as.Date(tests$Date,format="%d-%m-%Y")
   
   font <- list(
     size = 15,
@@ -121,10 +124,23 @@ function(input, output, session) {
              font=list(family="Arial",size=13))
   })
   
-  output$Tested <- renderText({
-    ntest <- DIR %>% filter(Status == "Tested")
-    prettyNum(ntest$Number,big.mark=",")
+  output$Tested <- renderPlotly({
+    a <- plot_ly(tests,x=~Date,y=~TestsCompleted,type='scatter',name="Tests Completed",mode='lines',line=list(color="Purple"),
+                 hovertemplate = '<b>Date:</b> %{x} <br> <b>Tests Completed:</b> %{y}<extra></extra>')
+    a <- a %>% 
+      config(displayModeBar = F) %>%
+      style(hoverlabel=label) %>%
+      layout(title="Total Tests Completed",
+             #legend=list(x=0.1,y=0.9,bgcolor='#E2E2E2'),
+             xaxis=list(title="",dtick=86400000.0,tickangle=45,ticklen=5,showgrid=TRUE,automargin=FALSE),
+             margin=list(l=50,r=25,b=50),
+             yaxis=list(title="# of Tests"),
+             font=list(family="Arial",size=13))
   })
+  # output$Tested <- renderText({
+  #   ntest <- DIR %>% filter(Status == "Tested")
+  #   prettyNum(ntest$Number,big.mark=",")
+  # })
 
   
   output$timePlot <- renderPlotly({
@@ -137,7 +153,7 @@ function(input, output, session) {
       style(hoverlabel=label) %>%
       layout(title="Cases over Time",
              legend=list(x=0.1,y=0.9,bgcolor='#E2E2E2'),
-             xaxis=list(title="Date",dtick=86400000.0,tickangle=45,ticklen=5,showgrid=TRUE),
+             xaxis=list(title="",dtick=86400000.0,tickangle=45,ticklen=5,showgrid=TRUE),
              yaxis=list(title="# of Cases"),
              font=list(family="Arial",size=13))
     t
