@@ -103,7 +103,7 @@ if (numTests != testsCompleted$TestsCompleted[nrow(testsCompleted)]) {
                         TestsCompleted=c(testsCompleted$TestsCompleted,
                                          numTests),
                         newTests=c(testsCompleted$New,newTests))
-  write.csv(testsCompleted,'/srv/shiny-server/covid19mb/TestsCompleted.csv',row.names=FALSE)
+  write.csv(newData,'/srv/shiny-server/covid19mb/TestsCompleted.csv',row.names=FALSE)
 }
 
 #DIR
