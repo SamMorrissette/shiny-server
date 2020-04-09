@@ -59,7 +59,7 @@ function(input, output, session) {
   timeData <- epiCurve
   timeData$date <- as.Date(timeData$date)
   
-  tests$Date <- as.Date(tests$Date,format="%d-%m-%Y")
+  tests$Date <- as.Date(tests$Date,format="%Y-%m-%d")
   
   font <- list(
     size = 15
@@ -125,7 +125,7 @@ function(input, output, session) {
                  line=list(color="Purple"),
                  marker=list(color="Purple"))
                  #hovertemplate = '<b>Date:</b> %{x} <br> <b>Total Tests:</b> %{y}<extra></extra>')
-    a <- a %>% add_trace(tests,y=~New,type='bar',name="New Tests",
+    a <- a %>% add_trace(tests,y=~newTests,type='bar',name="New Tests",
                          marker=list(color=c('rgb(153,204,153')))
                          #hovertemplate = '<b>Date:</b> %{x} <br> <b>New Tests:</b> %{y}<extra></extra>')
     a <- a %>% 
