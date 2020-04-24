@@ -93,7 +93,7 @@ numTests <- html_nodes(mainpage,"p") %>%
 numTests <- as.numeric(gsub("\\,", "", numTests))
 
 testsCompleted <- read.csv('/srv/shiny-server/covid19mb/TestsCompleted.csv')
-testsCompleted$Date <- as.Date(testsCompleted$Date,format="%d-%m-%Y")
+testsCompleted$Date <- as.Date(testsCompleted$Date,format="%Y-%m-%d")
 newData <- data.frame()
 
 if (numTests != testsCompleted$TestsCompleted[nrow(testsCompleted)]) {
@@ -102,7 +102,7 @@ if (numTests != testsCompleted$TestsCompleted[nrow(testsCompleted)]) {
                                testsCompleted$Date[nrow(testsCompleted)]+1),
                         TestsCompleted=c(testsCompleted$TestsCompleted,
                                          numTests),
-                        newTests=c(testsCompleted$New,newTests))
+                        newTests=c(testsCompleted$newTests,newTests))
   write.csv(newData,'/srv/shiny-server/covid19mb/TestsCompleted.csv',row.names=FALSE)
 }
 
