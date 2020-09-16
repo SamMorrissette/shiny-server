@@ -3,9 +3,6 @@ library(tidyverse)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-  
-  #Get last test and append to all tests
-  
   #All tests is all speedtests from start to now
   all_test <- read_csv('/srv/shiny-server/internetspeed/all_test.csv')
   
