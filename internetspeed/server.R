@@ -5,21 +5,26 @@ library(tidyverse)
 shinyServer(function(input, output) {
   #All tests is all speedtests from start to now
   all_test <- read_csv('/srv/shiny-server/internetspeed/all_test.csv')
-  min_date <- input$dateRange[1]
-  max_date <- input$dateRange[2]
+
   filtered <- all_test %>%
     filter(time >= min_date & time <= max_date)
   output$download <- renderPlot({
+    min_date <- input$dateRange[1]
+    max_date <- input$dateRange[2]
     ggplot(filtered, aes(x = time, y = download)) +
       geom_point() +
       geom_line()
     })
   output$upload <- renderPlot({
+    min_date <- input$dateRange[1]
+    max_date <- input$dateRange[2]
     ggplot(filtered, aes(x = time, y = upload)) +
       geom_point() +
       geom_line()
   })
   output$download <- renderPlot({
+    min_date <- input$dateRange[1]
+    max_date <- input$dateRange[2]
     ggplot(filtered, aes(x = time, y = ping)) +
       geom_point() +
       geom_line()
