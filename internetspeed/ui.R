@@ -18,8 +18,8 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-       plotOutput("download")
-       plotOutput("upload")
+       plotOutput("download"),
+       plotOutput("upload"),
        plotOutput("ping")
     )
   )
