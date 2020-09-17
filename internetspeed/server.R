@@ -12,17 +12,17 @@ shinyServer(function(input, output) {
   })
   
   output$download <- renderPlot({
-    ggplot(filtered, aes(x = time, y = download)) +
+    ggplot(filtered(), aes(x = time, y = download)) +
       geom_point() +
       geom_line()
     })
   output$upload <- renderPlot({
-    ggplot(filtered, aes(x = time, y = upload)) +
+    ggplot(filtered(), aes(x = time, y = upload)) +
       geom_point() +
       geom_line()
   })
   output$ping <- renderPlot({
-    ggplot(filtered, aes(x = time, y = ping)) +
+    ggplot(filtered(), aes(x = time, y = ping)) +
       geom_point() +
       geom_line()
   })
