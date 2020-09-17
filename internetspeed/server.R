@@ -26,7 +26,7 @@ shinyServer(function(input, output) {
       geom_point() +
       geom_line()
   })
-  output$download <- renderPlot({
+  output$ping <- renderPlot({
     filtered <- all_test %>%
       filter(time >= vals$min_date & time <= vals$max_date)
     ggplot(filtered, aes(x = time, y = ping)) +
