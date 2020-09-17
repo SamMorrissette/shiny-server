@@ -11,7 +11,7 @@ shinyServer(function(input, output) {
     all_test %>%
       filter(time >= input$dateRange[1] & time <= input$dateRange[2]) %>% 
       mutate(hour = as.numeric(format(as.POSIXct(time), "%H"))) %>%
-      filter(hour >= input$timeRange[1] & hour <= input$timeRange[2])
+      filter(hour >= input$timeRange[1] & hour < input$timeRange[2])
   })
   
   output$download <- renderPlot({
