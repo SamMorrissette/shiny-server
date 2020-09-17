@@ -14,21 +14,21 @@ shinyServer(function(input, output) {
   
   output$download <- renderPlot({
     filtered <- all_test %>%
-      filter(time >= min_date & time <= max_date)
+      filter(time >= vals$min_date & time <= vals$max_date)
     ggplot(filtered, aes(x = time, y = download)) +
       geom_point() +
       geom_line()
     })
   output$upload <- renderPlot({
     filtered <- all_test %>%
-      filter(time >= min_date & time <= max_date)
+      filter(time >= vals$min_date & time <=  vals$max_date)
     ggplot(filtered, aes(x = time, y = upload)) +
       geom_point() +
       geom_line()
   })
   output$download <- renderPlot({
     filtered <- all_test %>%
-      filter(time >= min_date & time <= max_date)
+      filter(time >= vals$min_date & time <= vals$max_date)
     ggplot(filtered, aes(x = time, y = ping)) +
       geom_point() +
       geom_line()
