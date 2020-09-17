@@ -10,10 +10,12 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       dateRangeInput('dateRange',
-                     label = paste('Select date range'),
+                     label = 'Select date range',
                      start = Sys.Date() - 3, end = Sys.Date() + 3,
                      min = Sys.Date() - 10, max = Sys.Date() + 10
-                     )
+                     ),
+      sliderInput("timeRange", label ="Select Hour Range", min = 0, 
+                  max = 24, value = c(0, 24))
       ),
     
     # Show a plot of the generated distribution
