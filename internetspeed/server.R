@@ -4,7 +4,7 @@ library(tidyverse)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   #All tests is all speedtests from start to now
-  all_test <- read_csv('/srv/shiny-server/internetspeed/all_test.csv')
+  all_test <- read_csv('/home/sam/SpeedTesting/all_test.csv')
   
   
   filtered <- reactive({
